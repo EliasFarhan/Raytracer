@@ -3,25 +3,25 @@
 #include <utility>
 #include "scene.h"
 
-struct RenderConfig
-{
-    std::pair<unsigned, unsigned> screenResolution = {800,800};
+struct RenderConfig {
+    std::pair<unsigned, unsigned> screenResolution = {4096, 4096};
     float fov = 30.0f;
     unsigned MAX_RAY_DEPTH = 5;
-    Color defaultColor = Color (255,255,255);
-    std::string bmpOutput = "out.bmp";
+    Color defaultColor = Color(1.0f, 1.0f, 1.0f);
+    std::string pngOutput = "out.png";
 };
 
-class Renderer
-{
+class Renderer {
 public:
-    void Render(const Scene& scene);
+    void Render(const Scene &scene, bool threaded);
+
     void Export();
 
     void SetConfig(const RenderConfig &config);
 
 private:
-    Color Trace(Vec3f origin, Vec3f dir, const Scene& scene, int currentDepth);
+    Color Trace(Vec3f origin, Vec3f dir, const Scene &scene, int currentDepth);
+
     std::vector<Color> frameBuffer_;
     RenderConfig renderConfig_;
 };

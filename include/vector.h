@@ -223,7 +223,10 @@ public:
         return std::sqrt(GetSquareMagnitude());
     }
 
-
+    static Vec3<T> Pow(Vec3<T> base, T exponent)
+    {
+        return Vec3(std::pow(base.x, exponent), std::pow(base.y, exponent), std::pow(base.z, exponent));
+    }
 
     static T Dot(Vec3<T> v1, Vec3<T> v2)
     {
@@ -286,7 +289,10 @@ public:
         *this = *this / rhs;
         return *this;
     }
-
+    Vec3<T> operator/(const Vec3<T>& rhs) const
+    {
+        return Vec3<T>(x / rhs.x, y / rhs.y, z / rhs.z);
+    }
     bool operator==(const Vec3<T>& right) const
     {
         return x == right.x && y == right.y && z == right.z;

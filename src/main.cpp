@@ -12,8 +12,10 @@ int main(int argc, char** argv)
     Renderer renderer;
 
     renderer.SetConfig(config);
+
     scene.GenerateRandomScene();
-    renderer.Render(scene);
+
+    renderer.Render(scene, true);
     renderer.Export();
 
     return EXIT_SUCCESS;
