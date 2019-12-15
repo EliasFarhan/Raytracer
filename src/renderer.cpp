@@ -1,4 +1,6 @@
 #include <renderer.h>
+#include <chrono>
+#include <iostream>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
@@ -12,6 +14,7 @@ void Renderer::Render(const Scene &scene) {
     const auto aspect = width / float(height);
     float angle = tan(M_PI * 0.5 * renderConfig_.fov / 180.);
     frameBuffer_.resize(renderConfig_.screenResolution.first * renderConfig_.screenResolution.second);
+    auto start = std::chrono::steady_clock::now();
     size_t px = 0;
     for (unsigned x = 0; x < width; x++) {
         for (unsigned y = 0; y < height; y++) {
@@ -22,6 +25,11 @@ void Renderer::Render(const Scene &scene) {
             px++;
         }
     }
+    auto end = std::chrono::steady_clock::now();
+    auto elapsed = end - start;
+    std::cout << "Time elapsed: " << elapsed.count() << '\n' <<
+              std::chrono::duration_cast<std::chrono::duration<double>>(elapsed).count() << "s\n";
+
 }
 
 void Renderer::Export() {
@@ -48,7 +56,43 @@ Color Renderer::Trace(Vec3f origin, Vec3f dir, const Scene &scene, int currentDe
     }
     if (closestSphere == nullptr) return renderConfig_.defaultColor;
 
-    return Color();
+    const size_t index = closestSphere - &scene.spheres_[0];
+    const auto &material = scene.materials_[index];
+    const Sphere &sphere = *closestSphere;
+    Color surfaceColor;
+    const auto hitPos = origin + dir * dnear;
+    const auto normalTmp = (hitPos - sphere.center);
+    const auto hitNormal = normalTmp / normalTmp.GetMagnitude();
+    const float bias = 1e-4;
+    if (material.reflection and currentDepth < renderConfig_.MAX_RAY_DEPTH) {
+        const auto tmpReflDir = dir - hitNormal * 2.0f * Vec3f::Dot(dir, hitNormal);
+        const auto reflDir = tmpReflDir / tmpReflDir.GetMagnitude();
+        surfaceColor += Trace(hitPos-hitNormal*bias, reflDir, scene, currentDepth + 1);
+    } else {
+        for (size_t i = 0; i < scene.spheres_.size(); ++i) {
+            if (scene.materials_[i].emissionColor.x > 0) {
+                // this is a light
+                float transmission = 1.0f;
+                Vec3f lightDir = scene.spheres_[i].center - hitPos;
+                lightDir = lightDir / lightDir.GetMagnitude();
+                for (unsigned j = 0; j < scene.spheres_.size(); ++j) {
+                    if (i != j) {
+                        auto interectDist = scene.spheres_[j].Intersect(hitPos + hitNormal * bias,
+                                                                        lightDir);
+                        if (interectDist.has_value()) {
+                            transmission = 0.0f;
+                            break;
+                        }
+                    }
+                }
+                surfaceColor += material.baseColor * transmission *
+                                std::max(float(0), Vec3f::Dot(hitNormal, lightDir)) *
+                                scene.materials_[i].emissionColor;
+            }
+        }
+    }
+
+    return surfaceColor + material.emissionColor;
 }
 
 void Renderer::SetConfig(const RenderConfig &config) {

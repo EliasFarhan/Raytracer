@@ -8,9 +8,9 @@ std::optional<float> Sphere::Intersect(Vec3f origin, Vec3f dir) const {
     const float r2 = radius * radius;
     if (d2 > r2) return {};
     const auto oc2 = co.GetSquareMagnitude();
-    const auto t1 = Vec3f::Dot(dir, origin - center);
-    const auto disc = t1 * t1 - oc2 - r2;
-    const auto x1 = -t1 - std::sqrt(disc);
-    const auto x2 = -t1 + std::sqrt(disc);
-    return x1 > 0 && x1 < x2 ? x1 : x2;
+    const auto disc = tca * tca - oc2 + r2;
+    const auto thc = std::sqrt(disc);
+    const auto x1 = tca - thc;
+    const auto x2 = tca + thc;
+    return x1 > 0 and x1 < x2 ? x1 : x2;
 }

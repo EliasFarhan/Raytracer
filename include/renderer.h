@@ -8,7 +8,7 @@ struct RenderConfig
     std::pair<unsigned, unsigned> screenResolution = {800,800};
     float fov = 30.0f;
     unsigned MAX_RAY_DEPTH = 5;
-    Color defaultColor;
+    Color defaultColor = Color (255,255,255);
     std::string bmpOutput = "out.bmp";
 };
 
