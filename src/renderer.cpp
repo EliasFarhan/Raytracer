@@ -1,6 +1,9 @@
 #include <renderer.h>
 #include <chrono>
 #include <iostream>
+#ifdef WIN32
+#define _USE_MATH_DEFINES
+#endif
 #include <cmath>
 #include <thread>
 
@@ -99,7 +102,7 @@ Color Renderer::Trace(Vec3f origin, Vec3f dir, const Scene &scene, int currentDe
     const auto normalTmp = (hitPos - sphere.center);
     const auto hitNormal = normalTmp / normalTmp.GetMagnitude();
     const float bias = 1e-4;
-    if (material.reflection and currentDepth < renderConfig_.MAX_RAY_DEPTH) {
+    if (material.reflection && currentDepth < renderConfig_.MAX_RAY_DEPTH) {
         const auto facingRatio = -Vec3f::Dot(dir, hitNormal);
         const auto fresnelEffect = mix(pow(1.0f - facingRatio, 3.0f), 1.0f, 0.1f);
         const auto tmpReflDir = dir - hitNormal * 2.0f * Vec3f::Dot(dir, hitNormal);
@@ -109,7 +112,7 @@ Color Renderer::Trace(Vec3f origin, Vec3f dir, const Scene &scene, int currentDe
         surfaceColor += Color(Vec3f(reflectionColor) * fresnelEffect);
     } else {
         for (size_t i = 0; i < scene.spheres_.size(); ++i) {
-            if (scene.materials_[i].emissionColor.x > 0 or scene.materials_[i].emissionColor.y > 0 or
+            if (scene.materials_[i].emissionColor.x > 0 || scene.materials_[i].emissionColor.y > 0 ||
                 scene.materials_[i].emissionColor.z > 0) {
                 // this is a light
                 float transmission = 1.0f;

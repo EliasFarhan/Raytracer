@@ -4,7 +4,7 @@
 #include "scene.h"
 
 struct RenderConfig {
-    std::pair<unsigned, unsigned> screenResolution = {4096, 4096};
+    std::pair<unsigned, unsigned> screenResolution = {1024, 1024};
     float fov = 30.0f;
     unsigned MAX_RAY_DEPTH = 5;
     Color defaultColor = Color(1.0f, 1.0f, 1.0f);

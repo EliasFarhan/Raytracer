@@ -15,7 +15,7 @@ void Scene::GenerateRandomScene() {
     std::uniform_real_distribution<float> radiusDist{1.0f, 3.0f};
     std::uniform_real_distribution<float> dist{0.0f, 1.0f};
 
-    std::uniform_int_distribution<char> boolDist{0, 1};
+    std::uniform_int_distribution<int> boolDist{0, 1};
     for(size_t i = 0; i < sphereNmb;i++)
     {
         Sphere sphere;

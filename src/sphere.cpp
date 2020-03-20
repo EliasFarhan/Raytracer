@@ -12,6 +12,6 @@ std::optional<float> Sphere::Intersect(Vec3f origin, Vec3f dir) const {
     const auto thc = std::sqrt(disc);
     const auto x1 = tca - thc;
     const auto x2 = tca + thc;
-    if(x1 < 0 and x2 < 0) return {};
-    return x1 > 0 and x1 < x2 ? x1 : x2;
+    if(x1 < 0 && x2 < 0) return {};
+    return x1 > 0 && x1 < x2 ? x1 : x2;
 }
