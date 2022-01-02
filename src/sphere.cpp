@@ -1,12 +1,12 @@
 #include <sphere.h>
 
 std::optional<float> Sphere::Intersect(Vec3f origin, Vec3f dir) const {
-    auto co = center - origin;
+    const auto co = center - origin;
     const auto tca = Vec3f::Dot(co, dir);
-    if (tca < 0) return {};
+    if (tca < 0) [[unlikely]] return {};
     const float d2 = (dir * tca - co).GetSquareMagnitude();
     const float r2 = radius * radius;
-    if (d2 > r2) return {};
+    if (d2 > r2) [[likely]] return {};
     const auto oc2 = co.GetSquareMagnitude();
     const auto disc = tca * tca - oc2 + r2;
     const auto thc = std::sqrt(disc);

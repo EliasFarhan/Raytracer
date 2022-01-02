@@ -6,10 +6,10 @@
 
 struct Sphere
 {
-    Vec3f center;
+    Vec3f center{};
     float radius = 0.0f;
 
-    std::optional<float> Intersect(Vec3f origin, Vec3f dir) const;
+    [[nodiscard]]std::optional<float> Intersect(Vec3f origin, Vec3f dir) const;
 
 
 };

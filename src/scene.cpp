@@ -10,13 +10,13 @@ void Scene::GenerateRandomScene() {
     std::random_device rd;
     std::mt19937 g(rd());
 
-    std::uniform_real_distribution<float> xyDist{-20.0f, 20.0f};
-    std::uniform_real_distribution<float> zDist{-5.0f, -100.0f};
-    std::uniform_real_distribution<float> radiusDist{1.0f, 3.0f};
-    std::uniform_real_distribution<float> dist{0.0f, 1.0f};
+    const std::uniform_real_distribution<float> xyDist{-20.0f, 20.0f};
+    const std::uniform_real_distribution<float> zDist{-5.0f, -100.0f};
+    const std::uniform_real_distribution<float> radiusDist{1.0f, 3.0f};
+    const std::uniform_real_distribution<float> dist{0.0f, 1.0f};
 
-    std::uniform_int_distribution<int> boolDist{0, 1};
-    for(size_t i = 0; i < sphereNmb;i++)
+    const std::uniform_int_distribution<int> boolDist{0, 1};
+    for(size_t i = 0; i < sphereNmb; i++)
     {
         Sphere sphere;
 
