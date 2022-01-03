@@ -11,6 +11,7 @@
 
 #include <fmt/format.h>
 
+#include "sphere.h"
 #include "timer.h"
 
 int main() {
@@ -32,6 +33,8 @@ int main() {
     // Render
     const auto image = std::make_unique<ray::Image<image_width, image_height>>();
 
+    constexpr ray::Sphere sphere{ray::Vec3f(0,0,-1), 0.5f};
+
     for (int j = 0; j < image_height; ++j) {
         for (int i = 0; i < image_width; ++i) {
             const auto u = static_cast<float>(i) / static_cast<float>(image_width - 1);
@@ -41,7 +44,9 @@ int main() {
             const auto t = 0.5f * (unit_direction.GetY() + 1.0f);
 
             
-            const auto color_f = (1.0f - t) * ray::Vec3f(1,1,1) + t * ray::Vec3f(0.5f, 0.7f, 1.0f);
+            const auto color_f = sphere.Hit(r) > 0.0f ? 
+                ray::Vec3f(1,0,0):
+                (1.0f - t) * ray::Vec3f(1,1,1) + t * ray::Vec3f(0.5f, 0.7f, 1.0f);
             //fmt::print("X: {} Y: {} T: {}, Color: {},{},{} \n", unit_direction.GetX(), unit_direction.GetY(), t, color_f.GetX(), color_f.GetY(), color_f.GetZ());
 
             auto& color = image->GetColor(i, j);
@@ -49,8 +54,7 @@ int main() {
         }
     }
     const auto timeToRender = timer.Restart();
-    image->WritePng("output_02.png");
+    image->WritePng("output_03.png");
     const auto timeToWriteToFile = timer.Restart();
     fmt::print("Time To Render: {}, Time To Write To File: {}", timeToRender.count(), timeToWriteToFile.count());
-
 }

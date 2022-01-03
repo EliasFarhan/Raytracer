@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <color.h>
 
 namespace ray
 {
@@ -55,14 +56,23 @@ namespace ray
         [[nodiscard]] auto GetLength() const noexcept { return std::sqrt(GetSquaredLength()); }
         [[nodiscard]] constexpr auto GetNormalized() const noexcept { return (*this) / GetLength(); }
 
-        static auto Dot(Vec3f v1, Vec3f v2) noexcept { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
-        static auto Cross(Vec3f v1, Vec3f v2) noexcept
+        static constexpr auto Dot(Vec3f v1, Vec3f v2) noexcept { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
+        static constexpr auto Cross(Vec3f v1, Vec3f v2) noexcept
         {
             return Vec3f(
                 v1.y * v2.z - v2.y * v1.z,
                 v2.x * v1.z - v2.z * v1.x,
                 v1.x * v2.y - v2.x * v1.y
             );
+        }
+
+        [[nodiscard]] constexpr Color ToColor() const noexcept
+        {
+            Color color;
+            color.r = static_cast<std::uint8_t>(x * 255.999f);
+            color.g = static_cast<std::uint8_t>(y * 255.999f);
+            color.b = static_cast<std::uint8_t>(z * 255.999f);
+            return color;
         }
     private:
         float x = 0.0f, y = 0.0f, z = 0.0f;
