@@ -12,6 +12,12 @@ struct HitRecord
     float t = std::numeric_limits<float>::max();
 };
 
+struct Payload
+{
+    Vec3f color;
+    int depth = 0;
+};
+
 class HittableInterface
 {
 public:

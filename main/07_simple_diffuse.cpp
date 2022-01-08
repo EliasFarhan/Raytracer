@@ -19,17 +19,34 @@
 #include "timer.h"
 #include "world.h"
 
+
 class SimpleLambertianWorld : public ray::World
 {
 public:
-    void ClosestHit(const ray::Ray& ray, const ray::Sphere& sphere, const ray::HitRecord& hitRecord, ray::Payload& payload) const override
+    void ClosestHit(const ray::Ray& ray, const ray::Sphere& sphere, const ray::HitRecord& hitRecord,
+        ray::Payload& payload) const override
     {
-        
+        if(payload.depth == MAX_DEPTH_RECURSION)
+        {
+            payload.color = ray::Vec3f();
+            return;
+        }
+        ray::Payload newPayload;
+        newPayload.depth = payload.depth + 1;
+        ray::HitRecord newHitRecord;
+        const ray::Vec3f target = hitRecord.point + hitRecord.normal + ray::Sphere::RandomUnitVector(ray::Random::GetInstance());
+        RayCast(ray::Ray(hitRecord.point, target - hitRecord.point), 0.001f, std::numeric_limits<float>::max(), newHitRecord, newPayload);
+        payload.color = 0.5f * newPayload.color;
     }
+
     void MissHit(const ray::Ray& ray, ray::Payload& payload) const override
     {
-        
+        const auto unit_direction = ray.GetDir().GetNormalized();
+        const auto t = 0.5f * (unit_direction.GetY() + 1.0f);
+        payload.color = (1.0f - t) * ray::One + t * ray::Vec3f(0.5f, 0.7f, 1.0f);
     }
+private:
+    static constexpr int MAX_DEPTH_RECURSION = 50;
 };
 
 int main() {
@@ -44,8 +61,8 @@ int main() {
     constexpr int samplePerPixel = 16;
     // World
     SimpleLambertianWorld world;
-    world.Add({ ray::Vec3f(0,0,-1), 0.5f },);
-    world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f },);
+    world.Add({ ray::Vec3f(0,0,-1), 0.5f });
+    world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f });
     // Render
     const auto image = std::make_unique<ray::Image<image_width, image_height>>();
 
@@ -59,24 +76,23 @@ int main() {
                 const auto v = (static_cast<float>(j) + random.Range(0.0f, 1.0f)) / static_cast<float>(image_height - 1);
                 const ray::Ray r = camera.GetRay(u, v);
 
-                const auto unit_direction = r.GetDir().GetNormalized();
-                const auto t = 0.5f * (unit_direction.GetY() + 1.0f);
+                
                 ray::HitRecord hitRecord;
                 ray::Payload payload;
-                const auto hit = world.RayCast(r, 0.0f, std::numeric_limits<float>::max(), hitRecord, payload);
-                const auto color_f = hit ?
-                    (hitRecord.normal + ray::One) * 0.5f :
-                    (1.0f - t) * ray::One + t * ray::Vec3f(0.5f, 0.7f, 1.0f);
+                world.RayCast(r, 0.001f, std::numeric_limits<float>::max(), hitRecord, payload);
+                const auto color_f = payload.color;
                 pixel_color += color_f;
                 //fmt::print("X: {} Y: {} T: {}, Color: {},{},{} \n", unit_direction.GetX(), unit_direction.GetY(), t, color_f.GetX(), color_f.GetY(), color_f.GetZ());
             }
             pixel_color = pixel_color * (1.0f / samplePerPixel);
+            // Gamma correction
+            pixel_color = ray::Vec3f(std::sqrt(pixel_color.GetX()), std::sqrt(pixel_color.GetY()), std::sqrt(pixel_color.GetZ()));
             auto& color = image->GetColor(i, j);
             color = pixel_color.ToColor();
         }
     }
     const auto timeToRender = timer.Restart();
-    image->WritePng("output_06.png");
+    image->WritePng("output_07.png");
     const auto timeToWriteToFile = timer.Restart();
     fmt::print("Time To Render: {}, Time To Write To File: {}", timeToRender.count(), timeToWriteToFile.count());
 }

@@ -15,7 +15,7 @@
 #include "timer.h"
 #include "world.h"
 
-class SimpleWorld : public ray::World
+class SimpleLambertianWorld : public ray::World
 {
 public:
     void ClosestHit(const ray::Ray& ray, const ray::Sphere& sphere, const ray::HitRecord& hitRecord) const override
@@ -41,9 +41,9 @@ int main() {
     constexpr auto vertical = ray::Vec3f(0, viewport_height, 0);
     constexpr auto lower_left_corner = origin - horizontal / 2.0f - vertical / 2.0f - ray::Vec3f(0, 0, focal_length);
     // World
-    SimpleWorld world;
-    world.Add({ ray::Vec3f(0,0,-1), 0.5f });
-    world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f });
+    SimpleLambertianWorld world;
+    world.Add({ ray::Vec3f(0,0,-1), 0.5f },);
+    world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f },);
     // Render
     const auto image = std::make_unique<ray::Image<image_width, image_height>>();
     

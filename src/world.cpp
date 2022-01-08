@@ -2,7 +2,7 @@
 
 namespace ray
 {
-bool World::Hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record) const
+bool World::RayCast(const Ray& ray, float t_min, float t_max, HitRecord& hit_record, Payload& payload) const
 {
     HitRecord tmpHitRecord;
     const Sphere* closestSphere = nullptr;
@@ -19,9 +19,10 @@ bool World::Hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record)
     }
     if(closestSphere != nullptr)
     {
-        ClosestHit(ray, *closestSphere, hit_record);
+        ClosestHit(ray, *closestSphere, hit_record, payload);
         return true;
     }
+    MissHit(ray, payload);
     return false;
 }
 
@@ -30,8 +31,9 @@ void World::Clear()
     spheres_.clear();
 }
 
-void World::Add(const Sphere& sphere)
+void World::Add(const Sphere& sphere, std::unique_ptr<Material> material)
 {
     spheres_.push_back(sphere);
+    materials_.push_back(std::move(material));
 }
 } // namespace ray

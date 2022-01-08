@@ -8,6 +8,7 @@ namespace ray
         public:
             Random() : e2(rd())
             {
+                instance_ = this;
             }
         template <typename T>
                 requires std::is_floating_point_v<T>
@@ -25,10 +26,12 @@ namespace ray
                 return dist(e2);
             }
 
+            static Random& GetInstance();
+
         private:
+            static Random* instance_;
             std::random_device rd;
             std::mt19937 e2;
     };
-
     
 } // namespace ray

@@ -24,6 +24,20 @@ namespace ray
         }
 
         bool Hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record) const override;
+
+        static Vec3f RandomInUnitSphere(Random& random)
+        {
+            while(true)
+            {
+                const auto p = Vec3f::Random(random, -1.0f, 1.0f);
+                if(p.GetSquaredLength() >= 1) continue;
+                return p;
+            }
+        }
+        static Vec3f RandomUnitVector(Random& random)
+        {
+            return RandomInUnitSphere(random).GetNormalized();
+        }
     private:
         Vec3f center_;
         float radius_ = 0.0f;
