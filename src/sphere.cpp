@@ -26,8 +26,9 @@ namespace ray
 
         hit_record.t = root;
         hit_record.point = ray.At(root);
-        hit_record.normal = (hit_record.point - center_) / radius_;
-
+        const auto outwardNormal = (hit_record.point - center_) / radius_;
+        hit_record.frontFace = Vec3f::Dot(ray.GetDir(), outwardNormal) < 0.0f;
+        hit_record.normal = hit_record.frontFace ? outwardNormal : -outwardNormal;
         return true;
     }
 } // namespace ray

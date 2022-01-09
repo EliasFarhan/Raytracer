@@ -44,8 +44,8 @@ int main() {
     constexpr int samplePerPixel = 16;
     // World
     SimpleLambertianWorld world;
-    world.Add({ ray::Vec3f(0,0,-1), 0.5f },);
-    world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f },);
+    world.Add({ ray::Vec3f(0,0,-1), 0.5f });
+    world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f });
     // Render
     const auto image = std::make_unique<ray::Image<image_width, image_height>>();
 

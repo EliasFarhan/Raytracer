@@ -21,6 +21,7 @@ namespace ray
 
         constexpr auto operator+(Vec3f other) const noexcept { return Vec3f(x + other.x, y + other.y, z + other.z); }
         constexpr auto operator-(Vec3f other) const noexcept { return Vec3f(x - other.x, y - other.y, z - other.z); }
+        constexpr auto operator-() const noexcept { return Vec3f(-x, -y, -z); }
         constexpr auto operator*(Vec3f other) const noexcept { return Vec3f(x * other.x, y * other.y, z * other.z); }
         constexpr auto operator*(float other) const noexcept { return Vec3f(x * other, y * other, z * other); }
         constexpr auto operator/(float other) const noexcept { return Vec3f(x / other, y / other, z / other); }
@@ -64,6 +65,7 @@ namespace ray
         static constexpr auto Dot(Vec3f v1, Vec3f v2) noexcept { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
 
         static Vec3f Reflect(Vec3f dir, Vec3f normal);
+        static Vec3f Refract(Vec3f uv, Vec3f normal, float ratio);
 
         static constexpr auto Cross(Vec3f v1, Vec3f v2) noexcept
         {
@@ -103,6 +105,16 @@ namespace ray
     {
         return dir - 2.0f * Dot(dir, normal) * normal;
     }
+
+    inline Vec3f Vec3f::Refract(Vec3f uv, Vec3f normal, float ratio)
+    {
+        const auto cosTheta = std::min(Dot(-uv, normal), 1.0f);
+        const auto rOutPerp = ratio * (uv + cosTheta * normal);
+        const auto rOutParallel = -std::sqrt(std::abs(1.0f - rOutPerp.GetSquaredLength())) * normal;
+        return rOutPerp + rOutParallel;
+
+    }
+
     static constexpr Vec3f One = Vec3f(1.0f, 1.0f, 1.0f);
     static constexpr Vec3f Right = Vec3f(1, 0, 0);
 } // namespace ray

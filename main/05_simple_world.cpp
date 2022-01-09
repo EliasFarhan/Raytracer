@@ -18,7 +18,12 @@
 class SimpleLambertianWorld : public ray::World
 {
 public:
-    void ClosestHit(const ray::Ray& ray, const ray::Sphere& sphere, const ray::HitRecord& hitRecord) const override
+    void ClosestHit(const ray::Ray& ray, const ray::Sphere& sphere, const ray::HitRecord& hitRecord,
+        ray::Payload& payload) const override
+    {
+        
+    }
+    void MissHit(const ray::Ray& ray, ray::Payload& payload) const override
     {
         
     }
@@ -42,8 +47,8 @@ int main() {
     constexpr auto lower_left_corner = origin - horizontal / 2.0f - vertical / 2.0f - ray::Vec3f(0, 0, focal_length);
     // World
     SimpleLambertianWorld world;
-    world.Add({ ray::Vec3f(0,0,-1), 0.5f },);
-    world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f },);
+    world.Add({ ray::Vec3f(0,0,-1), 0.5f });
+    world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f });
     // Render
     const auto image = std::make_unique<ray::Image<image_width, image_height>>();
     
@@ -57,7 +62,8 @@ int main() {
             const auto unit_direction = r.GetDir().GetNormalized();
             const auto t = 0.5f * (unit_direction.GetY() + 1.0f);
             ray::HitRecord hitRecord;
-            const auto hit = world.Hit(r, 0.0f, std::numeric_limits<float>::max(), hitRecord);
+            ray::Payload payload;
+            const auto hit = world.RayCast(r, 0.0f, std::numeric_limits<float>::max(), hitRecord, payload);
             const auto color_f = hit ? 
                 (hitRecord.normal + ray::One)*0.5f:
                 (1.0f - t) * ray::One + t * ray::Vec3f(0.5f, 0.7f, 1.0f);

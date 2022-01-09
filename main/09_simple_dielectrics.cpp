@@ -19,6 +19,8 @@
 #include "timer.h"
 #include "world.h"
 
+#include <omp.h>
+
 static ray::Random* globalRandom = nullptr;
 
 class SimpleMaterialWorld : public ray::World
@@ -78,12 +80,14 @@ int main() {
     world.Add({ ray::Vec3f(0,-100.5f,-1), 100.0f }, std::make_unique<ray::Lambertian>(ray::Vec3f(0.8f, 0.8f, 0.0f)));
     world.Add({ ray::Vec3f(0,0,-1), 0.5f }, std::make_unique<ray::Lambertian>(ray::Vec3f(0.7f,0.3f, 0.3f)));
     world.Add({ ray::Vec3f(-1,0,-1), 0.5f }, std::make_unique<ray::Metallic>(ray::Vec3f(0.8f, 0.8f, 0.8f), 0.3f));
-    world.Add({ ray::Vec3f(1,0,-1), 0.5f }, std::make_unique<ray::Metallic>(ray::Vec3f(0.8f,0.6f, 0.2f), 1.0f));
+    world.Add({ ray::Vec3f(1,0,-1), 0.5f }, std::make_unique<ray::Dielectric>(1.5f));
+    world.Add({ ray::Vec3f(1,0,-1), -0.4f }, std::make_unique<ray::Dielectric>(1.5f));
     // Render
     const auto image = std::make_unique<ray::Image<image_width, image_height>>();
 
-
+    #pragma omp parallel for
     for (int j = 0; j < image_height; ++j) {
+        #pragma omp parallel for
         for (int i = 0; i < image_width; ++i) {
             ray::Vec3f pixel_color;
             for (int s = 0; s < samplePerPixel; s++)
@@ -108,7 +112,7 @@ int main() {
         }
     }
     const auto timeToRender = timer.Restart();
-    image->WritePng("output_08.png");
+    image->WritePng("output_09.png");
     const auto timeToWriteToFile = timer.Restart();
     fmt::print("Time To Render: {}, Time To Write To File: {}", timeToRender.count(), timeToWriteToFile.count());
 }

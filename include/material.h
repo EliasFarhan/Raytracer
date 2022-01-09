@@ -24,10 +24,22 @@ private:
 class Metallic : public Material
 {
 public:
-    Metallic(const Vec3f& albedo);
+    Metallic(const Vec3f& albedo, float fuzz = 1.0f);
     bool Scatter(const Ray& rayIn, const HitRecord& hitRecord, Vec3f& attenuation, Ray& scattered) const override;
 private:
     Vec3f albedo_;
+    float fuzz_ = 1.0f;
+};
+
+class Dielectric : public Material
+{
+public:
+    Dielectric(float refractionIndex);
+    bool Scatter(const Ray& rayIn, const HitRecord& hitRecord, Vec3f& attenuation, Ray& scattered) const override;
+private:
+    static float Reflectance(float cosine, float refIndex);
+
+    float refractionIndex_ = 1.0f;
 };
 
 } // namespace ray

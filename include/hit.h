@@ -10,6 +10,7 @@ struct HitRecord
     Vec3f point;
     Vec3f normal;
     float t = std::numeric_limits<float>::max();
+    bool frontFace = false;
 };
 
 struct Payload
