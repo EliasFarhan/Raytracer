@@ -5,14 +5,14 @@ set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenMP)
-
+find_package(units CONFIG REQUIRED)
 find_path(STB_INCLUDE_DIRS "stb.h")
 find_package(fmt CONFIG REQUIRED)
 file(GLOB_RECURSE src_files include/*.h src/*.cpp)
 add_library(RayLib STATIC ${src_files})
 target_include_directories(RayLib PUBLIC "include/")
 target_include_directories(RayLib PUBLIC ${STB_INCLUDE_DIRS})
-target_link_libraries(RayLib PUBLIC fmt::fmt OpenMP::OpenMP_CXX)
+target_link_libraries(RayLib PUBLIC fmt::fmt OpenMP::OpenMP_CXX units::units)
 
 file(GLOB_RECURSE main_files main/*.cpp)
 foreach(main_file ${main_files})

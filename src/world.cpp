@@ -8,7 +8,7 @@ bool World::RayCast(const Ray& ray, float t_min, float t_max, HitRecord& hit_rec
     const Sphere* closestSphere = nullptr;
     for(const auto& sphere: spheres_)
     {
-        if(sphere.Hit(ray, t_min, t_max, tmpHitRecord))
+        if(sphere.Hit(ray, t_min, t_max, tmpHitRecord)) [[unlikely]]
         {
             if(tmpHitRecord.t < hit_record.t)
             {
